@@ -1,0 +1,232 @@
+/**
+ * ASP Syllabus - Admin Styles
+ * Modern, clean styling for the meta box interface
+ */
+
+/* Meta Box Container */
+.asp-syllabus-meta-box {
+    padding: 15px 0;
+}
+
+/* Rows Container */
+.asp-rows-container {
+    margin-bottom: 20px;
+}
+
+/* Individual Row */
+.asp-row {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease;
+}
+
+.asp-row:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Row Header */
+.asp-row-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 8px 8px 0 0;
+    cursor: move;
+}
+
+.asp-row-handle {
+    color: #999;
+    margin-right: 10px;
+    font-size: 18px;
+    cursor: move;
+}
+
+.asp-row-title {
+    flex: 1;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.asp-remove-row {
+    background: transparent;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.asp-remove-row:hover {
+    background: #ffebee;
+}
+
+.asp-remove-row .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* Row Content */
+.asp-row-content {
+    padding: 20px 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Field Groups */
+.asp-field-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.asp-field-group label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.asp-field-group input[type="text"] {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.asp-field-group input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.asp-field-group input[type="text"]::placeholder {
+    color: #999;
+}
+
+/* PDF Field */
+.asp-pdf-field {
+    display: flex;
+    gap: 10px;
+}
+
+.asp-pdf-field input.asp-pdf-url {
+    flex: 1;
+    background: #f8f9fa;
+}
+
+.asp-upload-pdf {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.asp-upload-pdf:hover {
+    background: #0056b3;
+}
+
+.asp-upload-pdf .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+}
+
+/* Add Row Button */
+.asp-add-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.asp-add-row:hover {
+    background: #218838;
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* Sortable Placeholder */
+.asp-rows-container .ui-sortable-placeholder {
+    visibility: visible !important;
+    background: #f0f4ff;
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    height: 180px;
+}
+
+.asp-rows-container .ui-sortable-helper {
+    opacity: 0.8;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Shortcode Info Box */
+.asp-shortcode-info {
+    padding: 10px;
+}
+
+.asp-shortcode-info p {
+    margin: 0 0 10px 0;
+    font-size: 13px;
+}
+
+.asp-shortcode-info input[type="text"] {
+    cursor: text;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .asp-row-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .asp-pdf-field {
+        flex-direction: column;
+    }
+    
+    .asp-upload-pdf {
+        justify-content: center;
+    }
+}
+
+/* Animation for new rows */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.asp-row.new-row {
+    animation: slideIn 0.3s ease;
+}
