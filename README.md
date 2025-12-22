@@ -198,6 +198,9 @@ Contributions are welcome! To contribute:
 - Conditional asset loading
 - Complete sanitization and escaping
 
+### Version 1.0.1
+- Fix "Add New Row" button
+
 ## 👤 Author
 
 **Tanvir Rana Rabbi**
@@ -229,3 +232,4 @@ If this plugin helped you, please give it a ⭐ on GitHub!
 ---
 
 **Made with ❤️ for the WordPress community**
+
