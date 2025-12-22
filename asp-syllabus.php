@@ -3,7 +3,7 @@
  * Plugin Name: ASP Syllabus
  * Plugin URI: https://github.com/tararauzumaki/asp-syllabus
  * Description: Create and manage multiple independent syllabus tables with PDF download and view functionality. Use shortcode [asp_syllabus id="X"] to display tables.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Tanvir Rana Rabbi
  * Author URI: 
  * License: GPL v2 or later
@@ -164,11 +164,14 @@ class ASP_Syllabus {
         $class = isset($data['class']) ? $data['class'] : '';
         $download_pdf = isset($data['download_pdf']) ? $data['download_pdf'] : '';
         $view_pdf = isset($data['view_pdf']) ? $data['view_pdf'] : '';
+        
+        // Handle template placeholder for JavaScript
+        $row_number = is_numeric($index) ? ($index + 1) : '{{ROW_NUMBER}}';
         ?>
         <div class="asp-row" data-index="<?php echo esc_attr($index); ?>">
             <div class="asp-row-header">
                 <span class="asp-row-handle dashicons dashicons-move"></span>
-                <span class="asp-row-title"><?php _e('Row', 'asp-syllabus'); ?> #<span class="row-number"><?php echo esc_html($index + 1); ?></span></span>
+                <span class="asp-row-title"><?php _e('Row', 'asp-syllabus'); ?> #<span class="row-number"><?php echo esc_html($row_number); ?></span></span>
                 <button type="button" class="asp-remove-row" title="<?php _e('Remove Row', 'asp-syllabus'); ?>">
                     <span class="dashicons dashicons-trash"></span>
                 </button>

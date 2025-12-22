@@ -102,7 +102,8 @@
      */
     function addNewRow() {
         const template = $('#asp-row-template').html();
-        const newRow = template.replace(/\{\{INDEX\}\}/g, rowIndex);
+        const newRow = template.replace(/\{\{INDEX\}\}/g, rowIndex)
+                              .replace(/\{\{ROW_NUMBER\}\}/g, rowIndex + 1);
         
         const $newRow = $(newRow);
         $newRow.addClass('new-row');
