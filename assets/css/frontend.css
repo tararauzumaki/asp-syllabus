@@ -6,7 +6,6 @@
 /* Wrapper */
 .asp-syllabus-wrapper {
     margin: 30px 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Main Title */
@@ -37,7 +36,7 @@
 
 /* Table Header */
 .asp-syllabus-table thead {
-    background: #5a6268;
+    background: #a4aeb8;
     color: #ffffff;
 }
 
@@ -69,6 +68,7 @@
     padding: 18px 20px;
     color: #495057;
     vertical-align: middle;
+    text-align: left;
 }
 
 /* Button Group */
@@ -149,63 +149,26 @@
     
     /* Table */
     .asp-syllabus-table {
-        font-size: 14px;
+        font-size: 13px;
     }
     
-    .asp-syllabus-table thead {
-        display: none;
-    }
-    
-    .asp-syllabus-table tbody tr {
-        display: block;
-        margin-bottom: 15px;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        background: #fff;
+    .asp-syllabus-table thead th {
+        padding: 14px 12px;
+        font-size: 13px;
     }
     
     .asp-syllabus-table tbody td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 15px;
-        border-bottom: 1px solid #f1f3f5;
+        padding: 14px 12px;
     }
     
-    .asp-syllabus-table tbody td:last-child {
-        border-bottom: none;
-    }
-    
-    .asp-syllabus-table tbody td:before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #5a6268;
-        margin-right: 10px;
-        text-transform: uppercase;
-        font-size: 12px;
-        letter-spacing: 0.5px;
-    }
-    
-    .asp-syllabus-table tbody td[data-label="Actions"] {
-        display: block;
-    }
-    
-    .asp-syllabus-table tbody td[data-label="Actions"]:before {
-        display: none;
-    }
-    
-    /* Button Group */
+    /* Button adjustments for mobile */
     .asp-button-group {
-        width: 100%;
-        justify-content: center;
-        margin-top: 5px;
+        gap: 8px;
     }
     
     .asp-btn {
-        flex: 1;
-        justify-content: center;
-        font-size: 13px;
-        padding: 10px 14px;
+        font-size: 12px;
+        padding: 8px 12px;
     }
 }
 
@@ -219,13 +182,28 @@
         font-size: 20px;
     }
     
-    .asp-button-group {
-        flex-direction: column;
-        gap: 8px;
+    .asp-syllabus-table {
+        font-size: 12px;
+    }
+    
+    .asp-syllabus-table thead th {
+        padding: 12px 10px;
+        font-size: 11px;
+    }
+    
+    .asp-syllabus-table tbody td {
+        padding: 12px 10px;
     }
     
     .asp-btn {
-        width: 100%;
+        font-size: 11px;
+        padding: 7px 10px;
+    }
+    
+    .asp-btn .dashicons {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
     }
 }
 

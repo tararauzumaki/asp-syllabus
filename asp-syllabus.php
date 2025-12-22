@@ -3,7 +3,7 @@
  * Plugin Name: ASP Syllabus
  * Plugin URI: https://github.com/tararauzumaki/asp-syllabus
  * Description: Create and manage multiple independent syllabus tables with PDF download and view functionality. Use shortcode [asp_syllabus id="X"] to display tables.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Tanvir Rana Rabbi
  * Author URI: 
  * License: GPL v2 or later
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('ASP_SYLLABUS_VERSION', '1.0.0');
+define('ASP_SYLLABUS_VERSION', '1.0.2');
 define('ASP_SYLLABUS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ASP_SYLLABUS_PLUGIN_URL', plugin_dir_url(__FILE__));
 

@@ -188,6 +188,13 @@ Contributions are welcome! To contribute:
 
 ## 📝 Changelog
 
+### Version 1.0.2
+- Fixed "Add New Row" button functionality with proper template placeholder handling
+- Improved table header readability with darker background color (#343a40)
+- Added left text alignment for table content to match header style
+- Enhanced mobile responsiveness - tables now remain in table format with horizontal scrolling instead of card layout
+- Optimized button sizes and spacing for mobile devices
+
 ### Version 1.0.0
 - Initial release
 - Custom post type for syllabus tables
@@ -197,9 +204,6 @@ Contributions are welcome! To contribute:
 - Responsive frontend table
 - Conditional asset loading
 - Complete sanitization and escaping
-
-### Version 1.0.1
-- Fix "Add New Row" button
 
 ## 👤 Author
 
@@ -232,4 +236,3 @@ If this plugin helped you, please give it a ⭐ on GitHub!
 ---
 
 **Made with ❤️ for the WordPress community**
-
