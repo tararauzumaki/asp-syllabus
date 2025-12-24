@@ -188,6 +188,15 @@ Contributions are welcome! To contribute:
 
 ## 📝 Changelog
 
+### Version 1.0.3
+- Added fully customizable table headers - define your own column names
+- Permanent "Download" column with PDF upload functionality (download and view buttons)
+- Added table preview feature to see frontend appearance before publishing
+- Added shortcode column to admin listing page for easy copying
+- Improved flexibility - minimum 1 custom column required (Download column auto-added)
+- Enhanced admin interface with drag-and-drop column reordering
+- Fixed class structure and improved code organization
+
 ### Version 1.0.2
 - Fixed "Add New Row" button functionality with proper template placeholder handling
 - Improved table header readability with darker background color (#343a40)

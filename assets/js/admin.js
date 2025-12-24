@@ -15,6 +15,10 @@
         
         // Initialize sortable
         initSortable();
+        initHeadersSortable();
+        
+        // Update header buttons visibility on load
+        updateHeaderButtons();
         
         // Add Row
         $(document).on('click', '.asp-add-row', function(e) {
@@ -30,6 +34,32 @@
                 $(this).closest('.asp-row').fadeOut(300, function() {
                     $(this).remove();
                     updateRowNumbers();
+                });
+            }
+        });
+        
+        // Add Header
+        $(document).on('click', '.asp-add-header', function(e) {
+            e.preventDefault();
+            addNewHeader();
+        });
+        
+        // Remove Header
+        $(document).on('click', '.asp-remove-header', function(e) {
+            e.preventDefault();
+            
+            const headerCount = $('.asp-header-item').length;
+            
+            if (headerCount <= 1) {
+                alert('You must have at least 1 column.');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to remove this column? This will affect all rows.')) {
+                const $item = $(this).closest('.asp-header-item');
+                $item.fadeOut(300, function() {
+                    $item.remove();
+                    updateHeaderButtons();
                 });
             }
         });
@@ -78,7 +108,7 @@
     });
     
     /**
-     * Initialize jQuery UI Sortable
+     * Initialize jQuery UI Sortable for Rows
      */
     function initSortable() {
         $('#asp-rows-container').sortable({
@@ -95,6 +125,59 @@
                 ui.placeholder.height(ui.item.height());
             }
         });
+    }
+    
+    /**
+     * Initialize jQuery UI Sortable for Headers
+     */
+    function initHeadersSortable() {
+        if ($('#asp-headers-container').length) {
+            $('#asp-headers-container').sortable({
+                handle: '.asp-header-handle',
+                axis: 'y',
+                opacity: 0.8,
+                cursor: 'move',
+                tolerance: 'pointer'
+            });
+        }
+    }
+    
+    /**
+     * Add New Header
+     */
+    function addNewHeader() {
+        const headerCount = $('.asp-header-item').length;
+        const newHeader = $('<div class="asp-header-item">' +
+            '<span class="asp-header-handle dashicons dashicons-move"></span>' +
+            '<input type="text" name="asp_headers[]" value="" placeholder="Column Name" required>' +
+            '<button type="button" class="button asp-remove-header" title="Remove Column">' +
+            '<span class="dashicons dashicons-no-alt"></span>' +
+            '</button>' +
+            '</div>');
+        
+        $('#asp-headers-container').append(newHeader);
+        newHeader.find('input').focus();
+        
+        // Update button visibility
+        updateHeaderButtons();
+        
+        // Refresh sortable
+        if ($('#asp-headers-container').hasClass('ui-sortable')) {
+            $('#asp-headers-container').sortable('refresh');
+        }
+    }
+    
+    /**
+     * Update Header Buttons Visibility
+     */
+    function updateHeaderButtons() {
+        const headerCount = $('.asp-header-item').length;
+        
+        if (headerCount <= 1) {
+            $('.asp-remove-header').hide();
+        } else {
+            $('.asp-remove-header').show();
+        }
     }
     
     /**

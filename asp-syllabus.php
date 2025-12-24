@@ -3,7 +3,7 @@
  * Plugin Name: ASP Syllabus
  * Plugin URI: https://github.com/tararauzumaki/asp-syllabus
  * Description: Create and manage multiple independent syllabus tables with PDF download and view functionality. Use shortcode [asp_syllabus id="X"] to display tables.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Tanvir Rana Rabbi
  * Author URI: 
  * License: GPL v2 or later
@@ -48,6 +48,10 @@ class ASP_Syllabus {
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
         add_shortcode('asp_syllabus', array($this, 'shortcode_handler'));
         add_action('wp_enqueue_scripts', array($this, 'frontend_enqueue_scripts'));
+        add_filter('manage_asp_syllabus_table_posts_columns', array($this, 'add_shortcode_column'));
+        add_action('manage_asp_syllabus_table_posts_custom_column', array($this, 'render_shortcode_column'), 10, 2);
+        add_filter('post_row_actions', array($this, 'add_preview_row_action'), 10, 2);
+        add_action('template_redirect', array($this, 'preview_redirect'));
     }
     
     /**
@@ -90,6 +94,15 @@ class ASP_Syllabus {
      */
     public function add_meta_boxes() {
         add_meta_box(
+            'asp_syllabus_headers',
+            __('Table Headers', 'asp-syllabus'),
+            array($this, 'render_headers_box'),
+            'asp_syllabus_table',
+            'normal',
+            'high'
+        );
+        
+        add_meta_box(
             'asp_syllabus_rows',
             __('Syllabus Rows', 'asp-syllabus'),
             array($this, 'render_meta_box'),
@@ -118,6 +131,41 @@ class ASP_Syllabus {
             <input type="text" readonly value='[asp_syllabus id="<?php echo esc_attr($post->ID); ?>"]' onclick="this.select();" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; background: #f9f9f9;">
             <p style="margin-top: 10px; font-size: 12px; color: #666;">
                 <?php _e('Click to select, then copy and paste this shortcode into any post or page.', 'asp-syllabus'); ?>
+            </p>
+        </div>
+        <?php
+    }
+    
+    /**
+     * Render Table Headers Box
+     */
+    public function render_headers_box($post) {
+        $headers = get_post_meta($post->ID, '_asp_syllabus_headers', true);
+        if (!is_array($headers) || empty($headers)) {
+            $headers = array('Category', 'Class');
+        }
+        ?>
+        <div class="asp-headers-box">
+            <p><?php _e('Define your table column headers (minimum 1 column):', 'asp-syllabus'); ?></p>
+            <div class="asp-headers-container" id="asp-headers-container">
+                <?php foreach ($headers as $index => $header) : ?>
+                    <div class="asp-header-item">
+                        <span class="asp-header-handle dashicons dashicons-move"></span>
+                        <input type="text" name="asp_headers[]" value="<?php echo esc_attr($header); ?>" placeholder="<?php _e('Column Name', 'asp-syllabus'); ?>" required>
+                        <?php if (count($headers) > 1) : ?>
+                            <button type="button" class="button asp-remove-header" title="<?php _e('Remove Column', 'asp-syllabus'); ?>">
+                                <span class="dashicons dashicons-no-alt"></span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <button type="button" class="button button-secondary asp-add-header" style="margin-top: 10px;">
+                <span class="dashicons dashicons-plus-alt" style="margin-top: 3px;"></span>
+                <?php _e('Add Column', 'asp-syllabus'); ?>
+            </button>
+            <p class="description" style="margin-top: 10px;">
+                <?php _e('Note: A "Download" column with PDF upload functionality will be automatically added at the end.', 'asp-syllabus'); ?>
             </p>
         </div>
         <?php
@@ -160,10 +208,11 @@ class ASP_Syllabus {
      * Render Single Row
      */
     private function render_row($index, $data = array()) {
-        $category = isset($data['category']) ? $data['category'] : '';
-        $class = isset($data['class']) ? $data['class'] : '';
-        $download_pdf = isset($data['download_pdf']) ? $data['download_pdf'] : '';
-        $view_pdf = isset($data['view_pdf']) ? $data['view_pdf'] : '';
+        global $post;
+        $headers = get_post_meta($post->ID, '_asp_syllabus_headers', true);
+        if (!is_array($headers) || empty($headers)) {
+            $headers = array('Category', 'Class');
+        }
         
         // Handle template placeholder for JavaScript
         $row_number = is_numeric($index) ? ($index + 1) : '{{ROW_NUMBER}}';
@@ -177,28 +226,31 @@ class ASP_Syllabus {
                 </button>
             </div>
             <div class="asp-row-content">
-                <div class="asp-field-group">
-                    <label><?php _e('Category', 'asp-syllabus'); ?></label>
-                    <input type="text" name="asp_rows[<?php echo esc_attr($index); ?>][category]" value="<?php echo esc_attr($category); ?>" placeholder="<?php _e('Enter category name', 'asp-syllabus'); ?>">
-                </div>
-                <div class="asp-field-group">
-                    <label><?php _e('Class', 'asp-syllabus'); ?></label>
-                    <input type="text" name="asp_rows[<?php echo esc_attr($index); ?>][class]" value="<?php echo esc_attr($class); ?>" placeholder="<?php _e('Enter class name', 'asp-syllabus'); ?>">
-                </div>
-                <div class="asp-field-group">
+                <?php foreach ($headers as $col_index => $header) : 
+                    $field_name = 'column_' . $col_index;
+                    $field_value = isset($data[$field_name]) ? $data[$field_name] : '';
+                ?>
+                    <div class="asp-field-group">
+                        <label><?php echo esc_html($header); ?></label>
+                        <input type="text" name="asp_rows[<?php echo esc_attr($index); ?>][<?php echo esc_attr($field_name); ?>]" value="<?php echo esc_attr($field_value); ?>" placeholder="<?php echo esc_attr(sprintf(__('Enter %s', 'asp-syllabus'), $header)); ?>">
+                    </div>
+                <?php endforeach; ?>
+                
+                <!-- Always add Download column with PDF functionality -->
+                <div class="asp-field-group asp-download-column">
                     <label><?php _e('Download PDF', 'asp-syllabus'); ?></label>
                     <div class="asp-pdf-field">
-                        <input type="text" class="asp-pdf-url" name="asp_rows[<?php echo esc_attr($index); ?>][download_pdf]" value="<?php echo esc_url($download_pdf); ?>" placeholder="<?php _e('PDF URL for download', 'asp-syllabus'); ?>" readonly>
+                        <input type="text" class="asp-pdf-url" name="asp_rows[<?php echo esc_attr($index); ?>][download_pdf]" value="<?php echo esc_url(isset($data['download_pdf']) ? $data['download_pdf'] : ''); ?>" placeholder="<?php _e('PDF URL for download', 'asp-syllabus'); ?>" readonly>
                         <button type="button" class="button asp-upload-pdf" data-target="download">
                             <span class="dashicons dashicons-upload"></span>
                             <?php _e('Select PDF', 'asp-syllabus'); ?>
                         </button>
                     </div>
                 </div>
-                <div class="asp-field-group">
+                <div class="asp-field-group asp-download-column">
                     <label><?php _e('View PDF', 'asp-syllabus'); ?></label>
                     <div class="asp-pdf-field">
-                        <input type="text" class="asp-pdf-url" name="asp_rows[<?php echo esc_attr($index); ?>][view_pdf]" value="<?php echo esc_url($view_pdf); ?>" placeholder="<?php _e('PDF URL for viewing', 'asp-syllabus'); ?>" readonly>
+                        <input type="text" class="asp-pdf-url" name="asp_rows[<?php echo esc_attr($index); ?>][view_pdf]" value="<?php echo esc_url(isset($data['view_pdf']) ? $data['view_pdf'] : ''); ?>" placeholder="<?php _e('PDF URL for viewing', 'asp-syllabus'); ?>" readonly>
                         <button type="button" class="button asp-upload-pdf" data-target="view">
                             <span class="dashicons dashicons-upload"></span>
                             <?php _e('Select PDF', 'asp-syllabus'); ?>
@@ -234,16 +286,29 @@ class ASP_Syllabus {
             return;
         }
         
+        // Save headers
+        if (isset($_POST['asp_headers']) && is_array($_POST['asp_headers'])) {
+            $headers = array_map('sanitize_text_field', $_POST['asp_headers']);
+            $headers = array_filter($headers); // Remove empty values
+            if (count($headers) >= 1) {
+                update_post_meta($post_id, '_asp_syllabus_headers', array_values($headers));
+            }
+        }
+        
         // Save rows
         if (isset($_POST['asp_rows']) && is_array($_POST['asp_rows'])) {
             $rows = array();
             foreach ($_POST['asp_rows'] as $row) {
-                $rows[] = array(
-                    'category'     => sanitize_text_field($row['category']),
-                    'class'        => sanitize_text_field($row['class']),
-                    'download_pdf' => esc_url_raw($row['download_pdf']),
-                    'view_pdf'     => esc_url_raw($row['view_pdf']),
-                );
+                $row_data = array();
+                foreach ($row as $key => $value) {
+                    // Handle PDF fields with URL sanitization
+                    if ($key === 'download_pdf' || $key === 'view_pdf') {
+                        $row_data[$key] = esc_url_raw($value);
+                    } else {
+                        $row_data[$key] = sanitize_text_field($value);
+                    }
+                }
+                $rows[] = $row_data;
             }
             update_post_meta($post_id, '_asp_syllabus_rows', $rows);
         } else {
@@ -315,7 +380,12 @@ class ASP_Syllabus {
         }
         
         $rows = get_post_meta($post_id, '_asp_syllabus_rows', true);
+        $headers = get_post_meta($post_id, '_asp_syllabus_headers', true);
         $title = get_the_title($post_id);
+        
+        if (!is_array($headers) || empty($headers)) {
+            $headers = array('Category', 'Class');
+        }
         
         if (!is_array($rows) || empty($rows)) {
             return '<p class="asp-error">' . __('No syllabus data found.', 'asp-syllabus') . '</p>';
@@ -333,17 +403,23 @@ class ASP_Syllabus {
                 <table class="asp-syllabus-table">
                     <thead>
                         <tr>
-                            <th><?php _e('Category', 'asp-syllabus'); ?></th>
-                            <th><?php _e('Class', 'asp-syllabus'); ?></th>
-                            <th><?php _e('Actions', 'asp-syllabus'); ?></th>
+                            <?php foreach ($headers as $header) : ?>
+                                <th><?php echo esc_html($header); ?></th>
+                            <?php endforeach; ?>
+                            <th><?php _e('Download', 'asp-syllabus'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($rows as $row) : ?>
                             <tr>
-                                <td data-label="<?php _e('Category', 'asp-syllabus'); ?>"><?php echo esc_html($row['category']); ?></td>
-                                <td data-label="<?php _e('Class', 'asp-syllabus'); ?>"><?php echo esc_html($row['class']); ?></td>
-                                <td data-label="<?php _e('Actions', 'asp-syllabus'); ?>">
+                                <?php foreach ($headers as $col_index => $header) : 
+                                    $field_name = 'column_' . $col_index;
+                                    $value = isset($row[$field_name]) ? $row[$field_name] : '';
+                                ?>
+                                    <td data-label="<?php echo esc_attr($header); ?>"><?php echo esc_html($value); ?></td>
+                                <?php endforeach; ?>
+                                
+                                <td data-label="<?php _e('Download', 'asp-syllabus'); ?>">
                                     <div class="asp-button-group">
                                         <?php if (!empty($row['download_pdf'])) : ?>
                                             <a href="<?php echo esc_url($row['download_pdf']); ?>" class="asp-btn asp-btn-download" download>
@@ -368,6 +444,73 @@ class ASP_Syllabus {
         </div>
         <?php
         return ob_get_clean();
+    }
+    
+    /**
+     * Add Shortcode Column to Admin Listing
+     */
+    public function add_shortcode_column($columns) {
+        $new_columns = array();
+        foreach ($columns as $key => $value) {
+            $new_columns[$key] = $value;
+            if ($key === 'title') {
+                $new_columns['shortcode'] = __('Shortcode', 'asp-syllabus');
+            }
+        }
+        return $new_columns;
+    }
+    
+    /**
+     * Add Preview Row Action
+     */
+    public function add_preview_row_action($actions, $post) {
+        if ($post->post_type === 'asp_syllabus_table') {
+            $preview_url = add_query_arg(array(
+                'p' => $post->ID,
+                'asp_preview' => 1
+            ), home_url('/'));
+            
+            $actions['asp_preview'] = '<a href="' . esc_url($preview_url) . '" target="_blank" title="' . esc_attr__('Preview table in new window', 'asp-syllabus') . '">' . __('Preview', 'asp-syllabus') . '</a>';
+        }
+        return $actions;
+    }
+    
+    /**
+     * Render Shortcode Column Content
+     */
+    public function render_shortcode_column($column, $post_id) {
+        if ($column === 'shortcode') {
+            $shortcode = '[asp_syllabus id="' . $post_id . '"]';
+            echo '<input type="text" readonly value="' . esc_attr($shortcode) . '" onclick="this.select();" style="width: 100%; padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; font-family: monospace; font-size: 12px; background: #f9f9f9; cursor: pointer;" title="' . esc_attr__('Click to select and copy', 'asp-syllabus') . '">';
+        }
+    }
+    
+    /**
+     * Handle Preview Redirect
+     */
+    public function preview_redirect() {
+        if (isset($_GET['asp_preview']) && isset($_GET['p'])) {
+            $post_id = intval($_GET['p']);
+            
+            if (get_post_type($post_id) === 'asp_syllabus_table' && current_user_can('edit_post', $post_id)) {
+                // Load frontend styles
+                wp_enqueue_style(
+                    'asp-syllabus-frontend',
+                    ASP_SYLLABUS_PLUGIN_URL . 'assets/css/frontend.css',
+                    array(),
+                    ASP_SYLLABUS_VERSION
+                );
+                
+                // Output preview page
+                wp_head();
+                echo '<div style="padding: 20px; max-width: 1200px; margin: 0 auto;">';
+                echo '<h1 style="margin-bottom: 20px;">Preview: ' . esc_html(get_the_title($post_id)) . '</h1>';
+                echo do_shortcode('[asp_syllabus id="' . $post_id . '"]');
+                echo '</div>';
+                wp_footer();
+                exit;
+            }
+        }
     }
 }
 

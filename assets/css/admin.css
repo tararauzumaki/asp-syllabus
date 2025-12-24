@@ -80,6 +80,11 @@
     gap: 15px;
 }
 
+/* Download column fields should span full width */
+.asp-field-group.asp-download-column {
+    grid-column: 1 / -1;
+}
+
 /* Field Groups */
 .asp-field-group {
     display: flex;
@@ -198,6 +203,98 @@
 
 .asp-shortcode-info input[type="text"] {
     cursor: text;
+}
+
+/* Headers Box */
+.asp-headers-box {
+    padding: 15px;
+    background: #fff;
+}
+
+.asp-headers-box > p:first-child {
+    margin: 0 0 15px 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.asp-headers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.asp-header-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.asp-header-item:hover {
+    background: #f0f2f5;
+}
+
+.asp-header-handle {
+    color: #999;
+    font-size: 16px;
+    cursor: move;
+    flex-shrink: 0;
+}
+
+.asp-header-item input[type="text"] {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.asp-header-item input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.asp-remove-header {
+    background: transparent;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 5px 8px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.asp-remove-header:hover {
+    background: #ffebee;
+}
+
+.asp-remove-header .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.asp-add-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.asp-headers-container.ui-sortable-helper {
+    opacity: 0.8;
+}
+
+.asp-headers-box .description {
+    font-style: italic;
+    color: #666;
 }
 
 /* Responsive */
